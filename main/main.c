@@ -1,10 +1,32 @@
 #include <stdio.h>
 
+#include "nvs_flash.h"
 #include "esp_log.h"
+
+#include "ap_wifi.h"
 
 #define TAG "main_app"
 
+static void wifi_state_callback(WIFI_STATE state)
+{
+    if(state == WIFI_STATE_CONNECTED) {
+        ESP_LOGI(TAG, "wifi connected!");
+        // if(lv_obj_has_flag(guider_ui.screen_main_img_wifi, LV_OBJ_FLAG_HIDDEN)) {
+        //     lv_obj_clear_flag(guider_ui.screen_main_img_wifi, LV_OBJ_FLAG_HIDDEN);  //show the wifi state image
+        // }
+        // my_sntp_init();
+    } else if(state == WIFI_STATE_DISCONNECTED) {
+        ESP_LOGI(TAG, "wifi disconnected!");
+    } else {
+        ;
+    }
+}
+
 void app_main(void)
 {
+    ESP_ERROR_CHECK(nvs_flash_init());
+    
     ESP_LOGI(TAG, "Hello world!");
+
+    ap_wifi_init(wifi_state_callback);
 }

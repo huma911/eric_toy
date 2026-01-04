@@ -5,6 +5,9 @@
 
 #include "ap_wifi.h"
 
+#include "button.h"
+#include "knob.h"
+
 #define TAG "main_app"
 
 static void wifi_state_callback(WIFI_STATE state)
@@ -32,6 +35,9 @@ void app_main(void)
     ESP_ERROR_CHECK(nvs_flash_init());
     
     ESP_LOGI(TAG, "Hello world!");
+
+    button_init();
+    knob_init();
 
     ap_wifi_init(wifi_state_callback, wifi_no_info_callback);
 }

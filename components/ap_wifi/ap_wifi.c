@@ -146,13 +146,14 @@ static void ap_wifi_task(void* param)
 }
 
 /** wifi功能和ap配网功能初始化
- * @param f wifi连接状态回调函数
+ * @param wifi_state_callback wifi连接状态回调函数
+ * @param wifi_no_info_callback wifi无保存信息回调函数
  * @return 无 
 */
-void ap_wifi_init(p_wifi_state_callback f)
+void ap_wifi_init(p_wifi_state_callback wifi_state_callback, p_wifi_no_info_callback wifi_no_info_callback)
 {
     index_html = initi_web_page_buffer();
-    wifi_manager_init(f);
+    wifi_manager_init(wifi_state_callback, wifi_no_info_callback);
     apcfg_event = xEventGroupCreate();
     xTaskCreatePinnedToCore(ap_wifi_task,"apcfg",4096,NULL,2,NULL,0);
 }

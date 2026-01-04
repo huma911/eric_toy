@@ -22,11 +22,16 @@ static void wifi_state_callback(WIFI_STATE state)
     }
 }
 
+static void wifi_no_info_callback(void *arg)
+{
+    ESP_LOGI(TAG, "wifi no info callback");
+}
+
 void app_main(void)
 {
     ESP_ERROR_CHECK(nvs_flash_init());
     
     ESP_LOGI(TAG, "Hello world!");
 
-    ap_wifi_init(wifi_state_callback);
+    ap_wifi_init(wifi_state_callback, wifi_no_info_callback);
 }

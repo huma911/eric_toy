@@ -15,11 +15,15 @@ typedef void(*p_wifi_scan_callback)(int numbers,wifi_ap_record_t *ap_records);
 //wifi状态变化回调函数
 typedef void(*p_wifi_state_callback)(WIFI_STATE state);
 
+//wifi无保存信息回调函数
+typedef void(*p_wifi_no_info_callback)(void* arg);
+
 /** 初始化wifi，默认进入STA模式
- * @param f wifi状态变化回调函数
+ * @param wifi_state_callback wifi连接状态回调函数
+ * @param wifi_no_info_callback wifi无保存信息回调函数
  * @return 无 
 */
-void wifi_manager_init(p_wifi_state_callback f);
+void wifi_manager_init(p_wifi_state_callback wifi_state_callback, p_wifi_no_info_callback wifi_no_info_callback);
 
 /** 进入ap+sta模式
  * @param 无

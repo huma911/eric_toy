@@ -1,4 +1,4 @@
-#include "knob.h"
+#include "my_knob.h"
 
 #include "esp_log.h"
 #include "driver/gpio.h"
@@ -24,7 +24,7 @@ static void knob_right_cb(void *arg, void *data)
 }
 
 
-esp_err_t knob_init(void)
+esp_err_t my_knob_init(void)
 {
     // create knob
     knob_config_t cfg = {

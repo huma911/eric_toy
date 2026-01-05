@@ -1,4 +1,4 @@
-#include "button.h"
+#include "my_button.h"
 
 #include "esp_log.h"
 #include "driver/gpio.h"
@@ -6,6 +6,8 @@
 #include "button_types.h"
 #include "button_gpio.h"
 #include "iot_button.h"
+
+#include "ap_wifi.h"
 
 #define TAG "main_button"
 
@@ -25,7 +27,18 @@ static void button_knob_single_click_cb(void *arg,void *usr_data)
     ESP_LOGI(TAG, "BUTTON_KNOB_SINGLE_CLICK");
 }
 
-esp_err_t button_init(void)
+static void button_k0_long_press_start_cb(void *arg,void *usr_data)
+{
+    ESP_LOGI(TAG, "BUTTON_K0_LONG_PRESS_START");
+    ap_wifi_apcfg(true);    //enter AP configuration
+}
+
+static void button_knob_long_press_start_cb(void *arg,void *usr_data)
+{
+    ESP_LOGI(TAG, "BUTTON_KNOB_LONG_PRESS_START");
+}
+
+esp_err_t my_button_init(void)
 {
     //k0
     {
@@ -45,12 +58,25 @@ esp_err_t button_init(void)
         }
 
         // register the button callback
+        // single click
         ret = iot_button_register_cb(gpio_k0_btn, BUTTON_SINGLE_CLICK, NULL, button_k0_single_click_cb, NULL);
         if(ret == ESP_FAIL) {
-            ESP_LOGE(TAG, "Button k0 register callback failed");
+            ESP_LOGE(TAG, "Button k0 register single click callback failed");
             return ESP_FAIL;
         } else {
-            ESP_LOGI(TAG, "Button k0 register callback success");
+            ESP_LOGI(TAG, "Button k0 register single click callback success");
+        }
+
+        // long press start
+        button_event_args_t args = {
+            .long_press.press_time = 2000,
+        };
+        ret = iot_button_register_cb(gpio_k0_btn, BUTTON_LONG_PRESS_START, &args, button_k0_long_press_start_cb, NULL);
+        if(ret == ESP_FAIL) {
+            ESP_LOGE(TAG, "Button k0 register long press start callback failed");
+            return ESP_FAIL;
+        } else {
+            ESP_LOGI(TAG, "Button k0 register long press start callback success");
         }
     }
 
@@ -72,12 +98,25 @@ esp_err_t button_init(void)
         }
 
         // register the button callback
+        // single click
         ret = iot_button_register_cb(gpio_knob_btn, BUTTON_SINGLE_CLICK, NULL, button_knob_single_click_cb, NULL);
         if(ret == ESP_FAIL) {
-            ESP_LOGE(TAG, "Button knob register callback failed");
+            ESP_LOGE(TAG, "Button knob register single click callback failed");
             return ESP_FAIL;
         } else {
-            ESP_LOGI(TAG, "Button knob register callback success");
+            ESP_LOGI(TAG, "Button knob register single click callback success");
+        }
+
+        // long press start
+        button_event_args_t args = {
+            .long_press.press_time = 2000,
+        };
+        ret = iot_button_register_cb(gpio_knob_btn, BUTTON_LONG_PRESS_START, &args, button_knob_long_press_start_cb, NULL);
+        if(ret == ESP_FAIL) {
+            ESP_LOGE(TAG, "Button knob register long press start callback failed");
+            return ESP_FAIL;
+        } else {
+            ESP_LOGI(TAG, "Button knob register long press start callback success");
         }
     }
 

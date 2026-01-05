@@ -15,7 +15,47 @@ extern "C" {
 
 #include "gui_guider.h"
 
+typedef enum {
+    AM = 0,
+    PM,
+} AM_PM_t;
+typedef struct {
+    uint8_t         hour;
+    AM_PM_t         value;
+} Time_format_t;
+typedef struct {
+    uint16_t year;
+    uint8_t month;
+    uint8_t day;
+
+    uint8_t hour;
+    uint8_t minute;
+    uint8_t second;
+
+    uint8_t week;
+} time_value_t;
+
+typedef enum {
+    WEEK_SUNDAY = 0,
+    WEEK_MONDAY,
+    WEEK_TUESDAY,
+    WEEK_WEDNESDAY,
+    WEEK_THURSDAY,
+    WEEK_FRIDAY,
+    WEEK_SATURDAY,
+    WEEK_DAY_NUM,
+} Week_Type;
+
+typedef struct {
+    Week_Type       week;
+    const char      *value;
+} Week_Entry;
+
 void custom_init(lv_ui *ui);
+
+void set_home_time(lv_ui* ui, time_value_t* date_value);
+
+extern lv_timer_t* digital_clock_timer;
 
 #ifdef __cplusplus
 }

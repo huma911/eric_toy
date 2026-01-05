@@ -1,4 +1,4 @@
-#include "display.h"
+#include "my_display.h"
 
 #include "esp_log.h"
 
@@ -149,7 +149,7 @@ static void lvgl_display_portation_init(void)
     lvgl_disp = lvgl_port_add_disp(&disp_cfg);
 }
 
-void display_init(void)
+void my_display_init(void)
 {
     lvgl_display_hardware_init();
     lvgl_display_portation_init();

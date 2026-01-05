@@ -16,9 +16,9 @@
 
 
 
-int screen_clock_home_digital_clock_main_min_value = 25;
-int screen_clock_home_digital_clock_main_hour_value = 11;
-int screen_clock_home_digital_clock_main_sec_value = 50;
+int screen_clock_home_digital_clock_main_min_value = 8;
+int screen_clock_home_digital_clock_main_hour_value = 8;
+int screen_clock_home_digital_clock_main_sec_value = 8;
 char screen_clock_home_digital_clock_main_meridiem[] = "AM";
 void setup_scr_screen_clock_home(lv_ui *ui)
 {
@@ -35,11 +35,11 @@ void setup_scr_screen_clock_home(lv_ui *ui)
     //Write codes screen_clock_home_digital_clock_main
     static bool screen_clock_home_digital_clock_main_timer_enabled = false;
     ui->screen_clock_home_digital_clock_main = lv_label_create(ui->screen_clock_home);
-    lv_obj_set_pos(ui->screen_clock_home_digital_clock_main, 15, 10);
-    lv_obj_set_size(ui->screen_clock_home_digital_clock_main, 130, 30);
-    lv_label_set_text(ui->screen_clock_home_digital_clock_main, "11:25:50 AM");
+    lv_obj_set_pos(ui->screen_clock_home_digital_clock_main, 10, 10);
+    lv_obj_set_size(ui->screen_clock_home_digital_clock_main, 140, 30);
+    lv_label_set_text(ui->screen_clock_home_digital_clock_main, "8:08:08 AM");
     if (!screen_clock_home_digital_clock_main_timer_enabled) {
-        lv_timer_create(screen_clock_home_digital_clock_main_timer, 1000, NULL);
+        digital_clock_timer = lv_timer_create(screen_clock_home_digital_clock_main_timer, 1000, NULL);
         screen_clock_home_digital_clock_main_timer_enabled = true;
     }
 

@@ -3,12 +3,20 @@
 #include "nvs_flash.h"
 #include "esp_log.h"
 
+#include "esp_lvgl_port.h"
+
 #include "ap_wifi.h"
 
 #include "button.h"
 #include "knob.h"
+#include "display.h"
+
+#include "gui_guider.h"
+#include "custom.h"
 
 #define TAG "main_app"
+
+lv_ui guider_ui;
 
 static void wifi_state_callback(WIFI_STATE state)
 {
@@ -38,6 +46,13 @@ void app_main(void)
 
     button_init();
     knob_init();
+
+    display_init();
+
+    lvgl_port_lock(0);
+    setup_ui(&guider_ui);
+    custom_init(&guider_ui);
+    lvgl_port_unlock();
 
     ap_wifi_init(wifi_state_callback, wifi_no_info_callback);
 }

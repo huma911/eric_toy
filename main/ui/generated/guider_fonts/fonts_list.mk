@@ -1,0 +1,1 @@
+GEN_CSRCS += lv_font_llpixelfun_regular_22.c lv_font_llpixelfun_regular_10.c

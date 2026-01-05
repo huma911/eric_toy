@@ -1,4 +1,4 @@
-set(INCLUDE_DIRS ".")
+set(INCLUDE_DIRS "." "ui/custom" "ui/generated" "ui/generated/guider_customer_fonts")
 set(SOURCES "")
 file(GLOB_RECURSE SOURCES ./*.c)
 

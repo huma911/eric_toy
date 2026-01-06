@@ -16,10 +16,6 @@
 
 
 
-int screen_clock_home_digital_clock_main_min_value = 8;
-int screen_clock_home_digital_clock_main_hour_value = 8;
-int screen_clock_home_digital_clock_main_sec_value = 8;
-char screen_clock_home_digital_clock_main_meridiem[] = "AM";
 void setup_scr_screen_clock_home(lv_ui *ui)
 {
     //Write codes screen_clock_home
@@ -32,32 +28,28 @@ void setup_scr_screen_clock_home(lv_ui *ui)
     lv_obj_set_style_bg_color(ui->screen_clock_home, lv_color_hex(0x000000), LV_PART_MAIN|LV_STATE_DEFAULT);
     lv_obj_set_style_bg_grad_dir(ui->screen_clock_home, LV_GRAD_DIR_NONE, LV_PART_MAIN|LV_STATE_DEFAULT);
 
-    //Write codes screen_clock_home_digital_clock_main
-    static bool screen_clock_home_digital_clock_main_timer_enabled = false;
-    ui->screen_clock_home_digital_clock_main = lv_label_create(ui->screen_clock_home);
-    lv_obj_set_pos(ui->screen_clock_home_digital_clock_main, 10, 10);
-    lv_obj_set_size(ui->screen_clock_home_digital_clock_main, 140, 30);
-    lv_label_set_text(ui->screen_clock_home_digital_clock_main, "8:08:08 AM");
-    if (!screen_clock_home_digital_clock_main_timer_enabled) {
-        digital_clock_timer = lv_timer_create(screen_clock_home_digital_clock_main_timer, 1000, NULL);
-        screen_clock_home_digital_clock_main_timer_enabled = true;
-    }
+    //Write codes screen_clock_home_label_digital_clock
+    ui->screen_clock_home_label_digital_clock = lv_label_create(ui->screen_clock_home);
+    lv_obj_set_pos(ui->screen_clock_home_label_digital_clock, 10, 10);
+    lv_obj_set_size(ui->screen_clock_home_label_digital_clock, 140, 30);
+    lv_label_set_text(ui->screen_clock_home_label_digital_clock, "8:08:08 AM");
+    lv_label_set_long_mode(ui->screen_clock_home_label_digital_clock, LV_LABEL_LONG_WRAP);
 
-    //Write style for screen_clock_home_digital_clock_main, Part: LV_PART_MAIN, State: LV_STATE_DEFAULT.
-    lv_obj_set_style_radius(ui->screen_clock_home_digital_clock_main, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
-    lv_obj_set_style_text_color(ui->screen_clock_home_digital_clock_main, lv_color_hex(0x00fff5), LV_PART_MAIN|LV_STATE_DEFAULT);
-    lv_obj_set_style_text_font(ui->screen_clock_home_digital_clock_main, &lv_font_llpixelfun_regular_22, LV_PART_MAIN|LV_STATE_DEFAULT);
-    lv_obj_set_style_text_opa(ui->screen_clock_home_digital_clock_main, 255, LV_PART_MAIN|LV_STATE_DEFAULT);
-    lv_obj_set_style_text_letter_space(ui->screen_clock_home_digital_clock_main, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
-    lv_obj_set_style_text_align(ui->screen_clock_home_digital_clock_main, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN|LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui->screen_clock_home_digital_clock_main, 255, LV_PART_MAIN|LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(ui->screen_clock_home_digital_clock_main, lv_color_hex(0x000000), LV_PART_MAIN|LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_grad_dir(ui->screen_clock_home_digital_clock_main, LV_GRAD_DIR_NONE, LV_PART_MAIN|LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_top(ui->screen_clock_home_digital_clock_main, 7, LV_PART_MAIN|LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_right(ui->screen_clock_home_digital_clock_main, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_bottom(ui->screen_clock_home_digital_clock_main, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_left(ui->screen_clock_home_digital_clock_main, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
-    lv_obj_set_style_shadow_width(ui->screen_clock_home_digital_clock_main, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
+    //Write style for screen_clock_home_label_digital_clock, Part: LV_PART_MAIN, State: LV_STATE_DEFAULT.
+    lv_obj_set_style_border_width(ui->screen_clock_home_label_digital_clock, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_set_style_radius(ui->screen_clock_home_label_digital_clock, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui->screen_clock_home_label_digital_clock, lv_color_hex(0x00fff5), LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui->screen_clock_home_label_digital_clock, &lv_font_llpixelfun_regular_22, LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui->screen_clock_home_label_digital_clock, 255, LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_set_style_text_letter_space(ui->screen_clock_home_label_digital_clock, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_set_style_text_line_space(ui->screen_clock_home_label_digital_clock, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_set_style_text_align(ui->screen_clock_home_label_digital_clock, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui->screen_clock_home_label_digital_clock, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_top(ui->screen_clock_home_label_digital_clock, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_right(ui->screen_clock_home_label_digital_clock, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_bottom(ui->screen_clock_home_label_digital_clock, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_left(ui->screen_clock_home_label_digital_clock, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
+    lv_obj_set_style_shadow_width(ui->screen_clock_home_label_digital_clock, 0, LV_PART_MAIN|LV_STATE_DEFAULT);
 
     //Write codes screen_clock_home_cont_air_quality
     ui->screen_clock_home_cont_air_quality = lv_obj_create(ui->screen_clock_home);

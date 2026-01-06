@@ -21,7 +21,7 @@ typedef struct
   
 	lv_obj_t *screen_clock_home;
 	bool screen_clock_home_del;
-	lv_obj_t *screen_clock_home_digital_clock_main;
+	lv_obj_t *screen_clock_home_label_digital_clock;
 	lv_obj_t *screen_clock_home_cont_air_quality;
 	lv_obj_t *screen_clock_home_label_air;
 	lv_obj_t *screen_clock_home_img_quality;

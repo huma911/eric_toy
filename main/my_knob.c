@@ -3,8 +3,6 @@
 #include "esp_log.h"
 #include "driver/gpio.h"
 
-#include "iot_knob.h"
-
 #define TAG "main_knob"
 
 //knob configuration
@@ -12,6 +10,9 @@
 
 #define KNOB_GPIO_B                 (GPIO_NUM_20)
 //knob configuration
+
+//knob handle
+knob_handle_t knob_encoder = NULL;
 
 static void knob_left_cb(void *arg, void *data)
 {
@@ -32,8 +33,8 @@ esp_err_t my_knob_init(void)
         .gpio_encoder_a = KNOB_GPIO_A,
         .gpio_encoder_b = KNOB_GPIO_B,
     };
-    knob_handle_t s_knob = iot_knob_create(&cfg);
-    if(s_knob == NULL) {
+    knob_encoder = iot_knob_create(&cfg);
+    if(knob_encoder == NULL) {
         ESP_LOGE(TAG, "knob create failed");
         return ESP_FAIL;
     } else {
@@ -41,14 +42,14 @@ esp_err_t my_knob_init(void)
     }
 
     esp_err_t ret = ESP_FAIL;
-    ret = iot_knob_register_cb(s_knob, KNOB_LEFT, knob_left_cb, NULL);
+    ret = iot_knob_register_cb(knob_encoder, KNOB_LEFT, knob_left_cb, NULL);
     if(ret != ESP_OK) {
         ESP_LOGE(TAG, "knob register left callback function failed");
         return ESP_FAIL;
     } else {
         ESP_LOGI(TAG, "knob register left callback function success");
     }
-    ret = iot_knob_register_cb(s_knob, KNOB_RIGHT, knob_right_cb, NULL);
+    ret = iot_knob_register_cb(knob_encoder, KNOB_RIGHT, knob_right_cb, NULL);
     if(ret != ESP_OK) {
         ESP_LOGE(TAG, "knob register right callback function failed");
         return ESP_FAIL;

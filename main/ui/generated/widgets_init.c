@@ -94,17 +94,3 @@ void digital_clock_count(int * hour, int * minute, int * seconds, char * meridie
 }
 
 
-extern int screen_clock_home_digital_clock_main_hour_value;
-extern int screen_clock_home_digital_clock_main_min_value;
-extern int screen_clock_home_digital_clock_main_sec_value;
-extern char screen_clock_home_digital_clock_main_meridiem[];
-
-void screen_clock_home_digital_clock_main_timer(lv_timer_t *timer)
-{
-    digital_clock_count(&screen_clock_home_digital_clock_main_hour_value, &screen_clock_home_digital_clock_main_min_value, &screen_clock_home_digital_clock_main_sec_value, screen_clock_home_digital_clock_main_meridiem);
-    if (lv_obj_is_valid(guider_ui.screen_clock_home_digital_clock_main))
-    {
-        lv_label_set_text_fmt(guider_ui.screen_clock_home_digital_clock_main, "%d:%02d:%02d %s", screen_clock_home_digital_clock_main_hour_value, screen_clock_home_digital_clock_main_min_value, screen_clock_home_digital_clock_main_sec_value, screen_clock_home_digital_clock_main_meridiem);
-    }
-}
-

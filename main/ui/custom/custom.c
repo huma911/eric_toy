@@ -18,6 +18,8 @@
 
 #include "esp_log.h"
 #include "lvgl.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
 #include "custom.h"
 
@@ -46,12 +48,6 @@
 
 lv_ui*        custom_ui           = NULL;
 
-lv_timer_t*   digital_clock_timer = NULL;
-
-
-extern int screen_clock_home_digital_clock_main_hour_value;
-extern int screen_clock_home_digital_clock_main_min_value;
-extern int screen_clock_home_digital_clock_main_sec_value;
 
 const Week_Entry week_entries[] = {
 	{WEEK_SUNDAY,        "Sunday"		},
@@ -102,9 +98,9 @@ static void date_config(lv_ui* ui)
 void set_home_time(lv_ui* ui, time_value_t* date_value)
 {
     //1.set clock
-    screen_clock_home_digital_clock_main_hour_value = (int)(date_value->hour);
-    screen_clock_home_digital_clock_main_min_value  = (int)(date_value->minute);
-    screen_clock_home_digital_clock_main_sec_value  = (int)(date_value->second);
+    // screen_clock_home_digital_clock_main_hour_value = (int)(date_value->hour);
+    // screen_clock_home_digital_clock_main_min_value  = (int)(date_value->minute);
+    // screen_clock_home_digital_clock_main_sec_value  = (int)(date_value->second);
 
     //2.set date
     // char date_text[64];
@@ -126,7 +122,7 @@ void set_home_time(lv_ui* ui, time_value_t* date_value)
     // snprintf(week_after_text, sizeof(week_after_text), "%s", week_entries[(date_value->week + 2) % WEEK_DAY_NUM].value);
 
     //5.set lvgl label
-    lvgl_port_lock(0);
+    // lvgl_port_lock(0);
     // lv_label_set_text(ui->screen_main_label_date, date_text);
     // lv_label_set_text(ui->screen_main_label_week, week_text);
     // lv_label_set_text(ui->screen_main_label_tomorrow, week_tomorrow_text);
@@ -134,26 +130,7 @@ void set_home_time(lv_ui* ui, time_value_t* date_value)
 
     // lv_label_set_text(ui->screen_aclock_label_date, date_text);
     // lv_label_set_text(ui->screen_aclock_label_week, week_text);
-    lvgl_port_unlock();
-}
-
-static void clock_count(int *hour, int *min, int *sec)
-{
-    (*sec)++;
-    if(*sec == 60) {
-        *sec = 0;
-        (*min)++;
-    }
-
-    if(*min == 60) {
-        *min = 0;
-        if(*hour < 23) {
-            (*hour)++;
-        } else {
-            (*hour)++;
-            *hour = *hour %24;
-        }
-    }
+    // lvgl_port_unlock();
 }
 
 static void time_format_convert(int hour, Time_format_t *convert_time)  // 24 to 12
@@ -173,22 +150,28 @@ static void time_format_convert(int hour, Time_format_t *convert_time)  // 24 to
     }
 }
 
-static void screen_main_digital_clock_main_replace_timer(lv_timer_t *timer)
+static void time_stamp_sync_task(void* param)
 {
-    clock_count(&screen_clock_home_digital_clock_main_hour_value, &screen_clock_home_digital_clock_main_min_value, &screen_clock_home_digital_clock_main_sec_value);
-    // aclock_update(custom_ui, &screen_main_digital_clock_main_hour_value, &screen_main_digital_clock_main_min_value, &screen_main_digital_clock_main_sec_value);
+    struct tm t;
 
-    if(screen_clock_home_digital_clock_main_hour_value == 0 && screen_clock_home_digital_clock_main_min_value == 0 && screen_clock_home_digital_clock_main_sec_value == 0)
-    {
-        ESP_LOGI(TAG, "update a new day!");
-        // date_config(custom_ui);
-    }
+    while(1) {
+        // 1. get the time stamp
+        time_t current_time = time(NULL);
 
-    if (lv_obj_is_valid(guider_ui.screen_clock_home))
-    {
-        Time_format_t convert_time;
-        time_format_convert(screen_clock_home_digital_clock_main_hour_value, &convert_time);
-        lv_label_set_text_fmt(guider_ui.screen_clock_home_digital_clock_main, "%d:%02d:%02d %s", convert_time.hour, screen_clock_home_digital_clock_main_min_value, screen_clock_home_digital_clock_main_sec_value, convert_time.value? "PM" : "AM");
+        // 2. convert to the local time
+        localtime_r(&current_time, &t);
+
+        // 3. set lvgl
+        if (lv_obj_is_valid(guider_ui.screen_clock_home))
+        {
+            Time_format_t convert_time;
+            time_format_convert(t.tm_hour, &convert_time);
+            lvgl_port_lock(0);
+            lv_label_set_text_fmt(guider_ui.screen_clock_home_label_digital_clock, "%d:%02d:%02d %s", convert_time.hour, t.tm_min, t.tm_sec, convert_time.value? "PM" : "AM");
+            lvgl_port_unlock();
+        }
+
+        vTaskDelay(pdMS_TO_TICKS(100));
     }
 }
 
@@ -198,16 +181,12 @@ void custom_init(lv_ui *ui)
 
     custom_ui = ui;
 
-    lvgl_port_lock(0);
+    if(pdFAIL == xTaskCreatePinnedToCore(time_stamp_sync_task, "time_sync", 4096, NULL, 5, NULL, 0)) {
+            ESP_LOGE(TAG, "creat time stamp sync task failed!");;
+        }
 
-    if(digital_clock_timer != NULL) {
-        lv_timer_pause(digital_clock_timer);
-        lv_timer_set_cb(digital_clock_timer, screen_main_digital_clock_main_replace_timer);
-        lv_timer_resume(digital_clock_timer);
-    } else {
-        ESP_LOGE(TAG, "digital clock timer have not been replaced!");
-    }
-    
+    lvgl_port_lock(0);
+    //todo
     lvgl_port_unlock();
 }
 

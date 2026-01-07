@@ -12,6 +12,7 @@
 #include "esp_event.h"
 
 #include "lwip/ip4_addr.h"
+
 #define TAG     "wifi_manager"
 
 //重连次数
@@ -30,7 +31,7 @@ static const char* ap_password = "88888888";
 //回调函数
 static p_wifi_state_callback    wifi_state_cb = NULL;
 
-static p_wifi_no_info_callback  wifi_no_info_cb = NULL;
+static p_wifi_saved_info_callback  wifi_saved_info_cb = NULL;
 
 //当前sta连接状态
 static bool is_sta_connected = false;
@@ -62,9 +63,9 @@ static void event_handler(void* arg, esp_event_base_t event_base,int32_t event_i
                     esp_wifi_connect();         //启动WIFI连接
                 } else {
                     ESP_LOGI(TAG, "No saved Wi-Fi config found");
-                    if(wifi_no_info_cb != NULL) {
-                        wifi_no_info_cb(NULL);
-                    }
+                }
+                if(wifi_saved_info_cb != NULL) {
+                    wifi_saved_info_cb(has_saved_wifi);
                 }
             } 
             break;
@@ -126,10 +127,10 @@ static void event_handler(void* arg, esp_event_base_t event_base,int32_t event_i
 
 /** 初始化wifi，默认进入STA模式
  * @param wifi_state_callback wifi连接状态回调函数
- * @param wifi_no_info_callback wifi无保存信息回调函数
+ * @param wifi_saved_info_callback wifi无保存信息回调函数
  * @return 无 
 */
-void wifi_manager_init(p_wifi_state_callback wifi_state_callback, p_wifi_no_info_callback wifi_no_info_callback)
+void wifi_manager_init(p_wifi_state_callback wifi_state_callback, p_wifi_saved_info_callback wifi_saved_info_callback)
 {
     ESP_ERROR_CHECK(esp_netif_init());  //用于初始化tcpip协议栈
     ESP_ERROR_CHECK(esp_event_loop_create_default());       //创建一个默认系统事件调度循环，之后可以注册回调函数来处理系统的一些事件
@@ -143,8 +144,8 @@ void wifi_manager_init(p_wifi_state_callback wifi_state_callback, p_wifi_no_info
     ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT,ESP_EVENT_ANY_ID,&event_handler,NULL));
     ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT,IP_EVENT_STA_GOT_IP,&event_handler,NULL));
 
-    wifi_state_cb = wifi_state_callback;
-    wifi_no_info_cb = wifi_no_info_callback;
+    wifi_state_cb      = wifi_state_callback;
+    wifi_saved_info_cb = wifi_saved_info_callback;
     //启动WIFI
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );         //设置工作模式为STA
     ESP_ERROR_CHECK(esp_wifi_start() );                         //启动WIFI

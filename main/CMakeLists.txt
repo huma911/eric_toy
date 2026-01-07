@@ -7,4 +7,4 @@ idf_component_register(
                         INCLUDE_DIRS ${INCLUDE_DIRS}
                         )
 
-spiffs_create_partition_image(html ../html FLASH_IN_PROJECT)
+spiffs_create_partition_image(storage ../spiffs FLASH_IN_PROJECT)

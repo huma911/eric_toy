@@ -20,10 +20,15 @@
 #include "lvgl.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "driver/gpio.h"
 
 #include "custom.h"
 
 #include "esp_lvgl_port.h"
+
+#include "my_button.h"
+#include "my_knob.h"
+#include "my_display.h"
 /*********************
  *      DEFINES
  *********************/
@@ -48,7 +53,39 @@
 
 lv_ui*        custom_ui           = NULL;
 
+//welcome screen
+void set_welcome(bool have_saved_netinfo)
+{
+    if(have_saved_netinfo) {
+        ;
+    } else {
+        char *text = "Please press the button to enter AP mode";
+        
+        lvgl_port_lock(0);
+        lv_label_set_text(custom_ui->screen_welcome_home_label_text, text);
+        lv_obj_add_flag(custom_ui->screen_welcome_home_bar_progress, LV_OBJ_FLAG_HIDDEN);
+        lvgl_port_unlock();
+    }
 
+    lv_screen_load(custom_ui->screen_welcome_home);
+}
+
+void set_welcome_progress_bar(uint8_t percent)
+{
+    lvgl_port_lock(0);
+    lv_bar_set_value(custom_ui->screen_welcome_home_bar_progress, percent, LV_ANIM_ON);
+    lvgl_port_unlock();
+
+    if(percent == 100) {
+        vTaskDelay(pdMS_TO_TICKS(1000));
+        lvgl_port_lock(0);
+        ui_load_scr_animation(custom_ui, &custom_ui->screen_clock_home, custom_ui->screen_clock_home_del, &custom_ui->screen_welcome_home_del, setup_scr_screen_clock_home, LV_SCR_LOAD_ANIM_FADE_IN, 1000, 0, true, true);
+        lvgl_port_unlock();
+    }
+}
+
+
+//time
 const Week_Entry week_entries[] = {
 	{WEEK_SUNDAY,        "Sunday"		},
 	{WEEK_MONDAY,        "Monday"		},
@@ -95,7 +132,7 @@ static void date_config(lv_ui* ui)
     lvgl_port_unlock();
 }
 
-void set_home_time(lv_ui* ui, time_value_t* date_value)
+void set_date(lv_ui* ui, time_value_t* date_value)
 {
     //1.set clock
     // screen_clock_home_digital_clock_main_hour_value = (int)(date_value->hour);
@@ -162,12 +199,12 @@ static void time_stamp_sync_task(void* param)
         localtime_r(&current_time, &t);
 
         // 3. set lvgl
-        if (lv_obj_is_valid(guider_ui.screen_clock_home))
+        if (lv_obj_is_valid(custom_ui->screen_clock_home))
         {
             Time_format_t convert_time;
             time_format_convert(t.tm_hour, &convert_time);
             lvgl_port_lock(0);
-            lv_label_set_text_fmt(guider_ui.screen_clock_home_label_digital_clock, "%d:%02d:%02d %s", convert_time.hour, t.tm_min, t.tm_sec, convert_time.value? "PM" : "AM");
+            lv_label_set_text_fmt(custom_ui->screen_clock_home_label_digital_clock, "%d:%02d:%02d %s", convert_time.hour, t.tm_min, t.tm_sec, convert_time.value? "PM" : "AM");
             lvgl_port_unlock();
         }
 
@@ -181,9 +218,17 @@ void custom_init(lv_ui *ui)
 
     custom_ui = ui;
 
+    // replace the "setup_ui(&guider_ui);" in the main
+    setup_bottom_layer();
+    init_scr_del_flag(ui);
+    init_keyboard(ui);
+    setup_scr_screen_welcome_home(ui);
+    // lv_screen_load(ui->screen_welcome_home);
+
+    // digital clock update task
     if(pdFAIL == xTaskCreatePinnedToCore(time_stamp_sync_task, "time_sync", 4096, NULL, 5, NULL, 0)) {
             ESP_LOGE(TAG, "creat time stamp sync task failed!");;
-        }
+    }
 
     lvgl_port_lock(0);
     //todo

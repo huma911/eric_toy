@@ -77,6 +77,7 @@ void init_scr_del_flag(lv_ui *ui)
     ui->screen_ap_ap_del = true;
     ui->screen_ap_html_del = true;
     ui->screen_ap_finish_del = true;
+    ui->screen_welcome_home_del = true;
 }
 
 void setup_bottom_layer(void)
@@ -89,8 +90,8 @@ void setup_ui(lv_ui *ui)
     setup_bottom_layer();
     init_scr_del_flag(ui);
     init_keyboard(ui);
-    setup_scr_screen_clock_home(ui);
-    lv_screen_load(ui->screen_clock_home);
+    setup_scr_screen_welcome_home(ui);
+    lv_screen_load(ui->screen_welcome_home);
 }
 
 void video_play(lv_ui *ui)

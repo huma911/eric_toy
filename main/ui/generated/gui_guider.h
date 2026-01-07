@@ -59,6 +59,12 @@ typedef struct
 	lv_obj_t *screen_ap_finish_label_step_finish;
 	lv_obj_t *screen_ap_finish_label_text;
 	lv_obj_t *screen_ap_finish_img_finish;
+	lv_obj_t *screen_welcome_home;
+	bool screen_welcome_home_del;
+	lv_obj_t *screen_welcome_home_cont_welcome;
+	lv_obj_t *screen_welcome_home_bar_progress;
+	lv_obj_t *screen_welcome_home_label_text;
+	lv_obj_t *screen_welcome_home_label_welcome;
 }lv_ui;
 
 typedef void (*ui_setup_scr_t)(lv_ui * ui);
@@ -91,6 +97,7 @@ void setup_scr_screen_ap_home(lv_ui *ui);
 void setup_scr_screen_ap_ap(lv_ui *ui);
 void setup_scr_screen_ap_html(lv_ui *ui);
 void setup_scr_screen_ap_finish(lv_ui *ui);
+void setup_scr_screen_welcome_home(lv_ui *ui);
 LV_IMAGE_DECLARE(_air_RGB565A8_24x24);
 LV_IMAGE_DECLARE(_button_RGB565A8_32x32);
 LV_IMAGE_DECLARE(_connect_RGB565A8_32x32);

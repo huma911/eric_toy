@@ -12,7 +12,10 @@
 #define TAG     "apcfg"
 
 //html网页在spiffs文件系统中的路径
-#define INDEX_HTML_PATH "/spiffs/apcfg.html"
+#define INDEX_HTML_PATH "/spiffs/html/apcfg.html"
+
+//html网页存储路径
+static char* path_html = NULL;
 
 //html网页缓存
 static char* index_html = NULL;
@@ -32,18 +35,9 @@ static char current_password[64];
 */
 static char* initi_web_page_buffer(void)
 {
-    //定义挂载点
-    esp_vfs_spiffs_conf_t conf = {
-        .base_path = "/spiffs",            //挂载点
-        .partition_label = "html",         //分区名称
-        .max_files = 5,                    //最大打开的文件数
-        .format_if_mount_failed = false    //挂载失败是否执行格式化
-        };
-    //挂载spiffs
-    ESP_ERROR_CHECK(esp_vfs_spiffs_register(&conf));
     //查找文件是否存在
     struct stat st;
-    if (stat(INDEX_HTML_PATH, &st))
+    if (stat(path_html != NULL? path_html : INDEX_HTML_PATH, &st))
     {
         ESP_LOGE(TAG, "apcfg.html not found");
         return NULL;
@@ -55,7 +49,7 @@ static char* initi_web_page_buffer(void)
         return NULL;
     }
     memset(page,0,st.st_size + 1);
-    FILE *fp = fopen(INDEX_HTML_PATH, "r");
+    FILE *fp = fopen(path_html != NULL? path_html : INDEX_HTML_PATH, "r");
     if (fread(page, st.st_size, 1, fp) == 0)
     {
         free(page);
@@ -147,13 +141,14 @@ static void ap_wifi_task(void* param)
 
 /** wifi功能和ap配网功能初始化
  * @param wifi_state_callback wifi连接状态回调函数
- * @param wifi_no_info_callback wifi无保存信息回调函数
+ * @param wifi_saved_info_callback wifi无保存信息回调函数
  * @return 无 
 */
-void ap_wifi_init(p_wifi_state_callback wifi_state_callback, p_wifi_no_info_callback wifi_no_info_callback)
+void ap_wifi_init(p_wifi_state_callback wifi_state_callback, p_wifi_saved_info_callback wifi_saved_info_callback, char *html_path)
 {
+    path_html  = html_path;
     index_html = initi_web_page_buffer();
-    wifi_manager_init(wifi_state_callback, wifi_no_info_callback);
+    wifi_manager_init(wifi_state_callback, wifi_saved_info_callback);
     apcfg_event = xEventGroupCreate();
     xTaskCreatePinnedToCore(ap_wifi_task,"apcfg",4096,NULL,2,NULL,0);
 }

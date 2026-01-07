@@ -99,25 +99,25 @@ esp_err_t my_button_init(void)
 
         // register the button callback
         // single click
-        ret = iot_button_register_cb(button_encoder_enter, BUTTON_SINGLE_CLICK, NULL, button_knob_single_click_cb, NULL);
-        if(ret == ESP_FAIL) {
-            ESP_LOGE(TAG, "Button knob register single click callback failed");
-            return ESP_FAIL;
-        } else {
-            ESP_LOGI(TAG, "Button knob register single click callback success");
-        }
+        // ret = iot_button_register_cb(button_encoder_enter, BUTTON_SINGLE_CLICK, NULL, button_knob_single_click_cb, NULL);
+        // if(ret == ESP_FAIL) {
+        //     ESP_LOGE(TAG, "Button knob register single click callback failed");
+        //     return ESP_FAIL;
+        // } else {
+        //     ESP_LOGI(TAG, "Button knob register single click callback success");
+        // }
 
         // long press start
-        button_event_args_t args = {
-            .long_press.press_time = 2000,
-        };
-        ret = iot_button_register_cb(button_encoder_enter, BUTTON_LONG_PRESS_START, &args, button_knob_long_press_start_cb, NULL);
-        if(ret == ESP_FAIL) {
-            ESP_LOGE(TAG, "Button knob register long press start callback failed");
-            return ESP_FAIL;
-        } else {
-            ESP_LOGI(TAG, "Button knob register long press start callback success");
-        }
+        // button_event_args_t args = {
+        //     .long_press.press_time = 2000,
+        // };
+        // ret = iot_button_register_cb(button_encoder_enter, BUTTON_LONG_PRESS_START, &args, button_knob_long_press_start_cb, NULL);
+        // if(ret == ESP_FAIL) {
+        //     ESP_LOGE(TAG, "Button knob register long press start callback failed");
+        //     return ESP_FAIL;
+        // } else {
+        //     ESP_LOGI(TAG, "Button knob register long press start callback success");
+        // }
     }
 
     return ESP_OK;

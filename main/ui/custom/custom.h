@@ -53,7 +53,9 @@ typedef struct {
 
 void custom_init(lv_ui *ui);
 
-void set_home_time(lv_ui* ui, time_value_t* date_value);
+void set_welcome(bool have_saved_netinfo);
+void set_welcome_progress_bar(uint8_t percent);
+void set_date(lv_ui* ui, time_value_t* date_value);
 
 extern lv_timer_t* digital_clock_timer;
 

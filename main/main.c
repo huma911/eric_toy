@@ -14,6 +14,7 @@
 #include "my_knob.h"
 #include "my_display.h"
 #include "my_sntp.h"
+#include "my_sensor.h"
 
 #include "gui_guider.h"
 #include "custom.h"
@@ -26,6 +27,7 @@ lv_ui guider_ui;
 //html path in the spiffs
 #define INDEX_HTML_PATH "/spiffs/html/apcfg.html"
 
+//spiffs
 static void spiffs_init(void)
 {
     // 0. config spiffs
@@ -40,6 +42,18 @@ static void spiffs_init(void)
     ESP_ERROR_CHECK(esp_vfs_spiffs_register(&conf));
 }
 
+//sensor callback
+static void my_sensor_ens160_cb(uint8_t aqi_index, uint16_t tvoc_value, uint16_t eco2_value)
+{
+    ESP_LOGI(TAG, "ESN160 have got the AQI index: %d, tvoc: %u, co2: %u.", aqi_index, tvoc_value, eco2_value);
+}
+
+static void my_sensor_aht21_cb(float temperature_value, float humidity_value)
+{
+    ESP_LOGI(TAG, "AHT21 have got the temperature: %f, humidity: %f.", temperature_value, humidity_value);
+}
+
+//sntp callback
 static void my_sntp_sync_time_cb(struct timeval *tv)
 {
     struct tm t;
@@ -62,6 +76,7 @@ static void my_sntp_sync_time_cb(struct timeval *tv)
     set_welcome_progress_bar(100);
 }
 
+//wifi call back
 static void wifi_state_callback(WIFI_STATE state)
 {
     if(state == WIFI_STATE_CONNECTED) {
@@ -94,7 +109,7 @@ void app_main(void)
 
     my_button_init();
     // my_knob_init();
-
+    my_sensor_init(my_sensor_ens160_cb, my_sensor_aht21_cb);
     my_display_init();
 
     my_time_zone_set();

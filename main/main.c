@@ -96,7 +96,15 @@ static void wifi_state_callback(WIFI_STATE state)
 static void wifi_saved_info_callback(bool arg)
 {
     ESP_LOGI(TAG, "wifi %s info callback", arg? "have" : "no");
-    set_welcome(arg);
+
+    if(lv_obj_is_valid(guider_ui.screen_welcome_home)){
+        set_welcome(arg);
+    } else {
+        if(lv_obj_is_valid(guider_ui.screen_ap_finish)) {   //from ap finish screen(ap config wifi success)
+            ui_load_scr_animation(&guider_ui, &guider_ui.screen_welcome_home, guider_ui.screen_welcome_home_del, &guider_ui.screen_ap_finish_del, setup_scr_screen_welcome_home, LV_SCR_LOAD_ANIM_FADE_IN, 1000, 0, true, true);
+            set_welcome(arg);
+        }
+    }
 }
 
 void app_main(void)

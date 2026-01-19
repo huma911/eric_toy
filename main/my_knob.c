@@ -6,9 +6,9 @@
 #define TAG "main_knob"
 
 //knob configuration
-#define KNOB_GPIO_A                 (GPIO_NUM_10)
+#define KNOB_GPIO_A                 (GPIO_NUM_9)
 
-#define KNOB_GPIO_B                 (GPIO_NUM_20)
+#define KNOB_GPIO_B                 (GPIO_NUM_10)
 //knob configuration
 
 //knob handle

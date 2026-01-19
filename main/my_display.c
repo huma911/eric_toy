@@ -15,10 +15,10 @@
 #define TAG "main_display"
 
 //display configuration
-#define LCD_GPIO_BL                 (GPIO_NUM_NC)
-#define LCD_GPIO_RST                (GPIO_NUM_7)
-#define LCD_GPIO_CS                 (GPIO_NUM_9)
-#define LCD_GPIO_DC                 (GPIO_NUM_8)
+#define LCD_GPIO_RST                (GPIO_NUM_NC)
+#define LCD_GPIO_BL                 (GPIO_NUM_0)
+#define LCD_GPIO_CS                 (GPIO_NUM_8)
+#define LCD_GPIO_DC                 (GPIO_NUM_7)
 #define LCD_GPIO_CLK                (GPIO_NUM_5)
 #define LCD_GPIO_MOSI               (GPIO_NUM_6)
 #define LCD_GPIO_MISO               (GPIO_NUM_NC)
@@ -51,12 +51,12 @@ lv_display_t *lvgl_disp = NULL;
 
 static void lvgl_display_hardware_init(void)
 {
-    // ESP_LOGI(TAG, "Turn off LCD backlight");
-    // gpio_config_t bk_gpio_config = {
-    //     .mode         = GPIO_MODE_OUTPUT,
-    //     .pin_bit_mask = 1ULL << LCD_GPIO_BL
-    // };
-    // ESP_ERROR_CHECK(gpio_config(&bk_gpio_config));
+    ESP_LOGI(TAG, "Turn off LCD backlight");
+    gpio_config_t bk_gpio_config = {
+        .mode         = GPIO_MODE_OUTPUT,
+        .pin_bit_mask = 1ULL << LCD_GPIO_BL
+    };
+    ESP_ERROR_CHECK(gpio_config(&bk_gpio_config));
 
 
     ESP_LOGI(TAG, "Initialize SPI bus");
@@ -101,7 +101,7 @@ static void lvgl_display_hardware_init(void)
     esp_lcd_panel_disp_on_off(lcd_panel_handle, true);
 
     /* LCD backlight on */
-    // ESP_ERROR_CHECK(gpio_set_level(LCD_GPIO_BL, LCD_BL_ON_LEVEL));
+    ESP_ERROR_CHECK(gpio_set_level(LCD_GPIO_BL, LCD_BL_ON_LEVEL));
 }
 
 

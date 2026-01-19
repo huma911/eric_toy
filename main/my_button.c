@@ -4,13 +4,15 @@
 #include "driver/gpio.h"
 
 #include "ap_wifi.h"
+#include "gui_guider.h"
+#include "custom.h"
 
 #define TAG "main_button"
 
 //button configuration
-#define BUTTON_GPIO_K0                  (GPIO_NUM_0)
+#define BUTTON_GPIO_K0                  (GPIO_NUM_21)
 
-#define BUTTON_GPIO_KNOB                (GPIO_NUM_21)
+#define BUTTON_GPIO_KNOB                (GPIO_NUM_20)
 //button configuration
 
 //button handle
@@ -20,6 +22,19 @@ button_handle_t button_encoder_enter = NULL;
 static void button_k0_enter_single_click_cb(void *arg,void *usr_data)
 {
     ESP_LOGI(TAG, "BUTTON_K0_ENTER_SINGLE_CLICK");
+
+    if(lv_obj_is_valid(guider_ui.screen_welcome_home)) {
+        extern lv_ui guider_ui;
+        ui_load_scr_animation(&guider_ui, &guider_ui.screen_ap_home, guider_ui.screen_ap_home_del, &guider_ui.screen_welcome_home_del, setup_scr_screen_ap_home, LV_SCR_LOAD_ANIM_FADE_IN, 1000, 0, true, true);
+    } else if(lv_obj_is_valid(guider_ui.screen_ap_ap)) {
+        extern lv_ui guider_ui;
+        ui_load_scr_animation(&guider_ui, &guider_ui.screen_ap_html, guider_ui.screen_ap_html_del, &guider_ui.screen_ap_ap_del, setup_scr_screen_ap_html, LV_SCR_LOAD_ANIM_FADE_IN, 1000, 0, true, true);
+    } else if(lv_obj_is_valid(guider_ui.screen_ap_html)) {
+        extern lv_ui guider_ui;
+        ui_load_scr_animation(&guider_ui, &guider_ui.screen_ap_finish, guider_ui.screen_ap_finish_del, &guider_ui.screen_ap_html_del, setup_scr_screen_ap_finish, LV_SCR_LOAD_ANIM_FADE_IN, 1000, 0, true, true);
+    } else {
+        ;
+    }
 }
 
 static void button_knob_single_click_cb(void *arg,void *usr_data)
@@ -30,7 +45,12 @@ static void button_knob_single_click_cb(void *arg,void *usr_data)
 static void button_k0_enter_long_press_start_cb(void *arg,void *usr_data)
 {
     ESP_LOGI(TAG, "BUTTON_K0_ENTER_LONG_PRESS_START");
-    ap_wifi_apcfg(true);    //enter AP configuration
+
+    if(lv_obj_is_valid(guider_ui.screen_ap_home)) {
+        extern lv_ui guider_ui;
+        ui_load_scr_animation(&guider_ui, &guider_ui.screen_ap_ap, guider_ui.screen_ap_ap_del, &guider_ui.screen_ap_home_del, setup_scr_screen_ap_ap, LV_SCR_LOAD_ANIM_FADE_IN, 1000, 0, true, true);
+        ap_wifi_apcfg(true);    //enter AP configuration
+    }
 }
 
 static void button_knob_long_press_start_cb(void *arg,void *usr_data)

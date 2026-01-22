@@ -6,13 +6,10 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-#include "ens160.h"
-#include "ahtxx.h"
-
 #define TAG "main_sensor"
 
-#define ENS160_SAMPLING_PERIOD      (10000)
-#define AHT21_SAMPLING_PERIOD       (5000)
+#define ENS160_SAMPLING_PERIOD_MS   (60000)
+#define AHT21_SAMPLING_PERIOD_MS    (30000)
 #define SECOND_TO_MILLISECOND       (1000)
 
 static i2c_master_bus_handle_t i2c_master_bus_handle = NULL;
@@ -40,7 +37,7 @@ static void my_ens160_task(void *pvParameters)
     //
     // task loop entry point
     for ( ;; ) {
-        ESP_LOGI(TAG, "######################## ENS160 - START #########################");
+        // ESP_LOGI(TAG, "######################## ENS160 - START #########################");
         //
         // handle sensor
         ens160_validity_flags_t dev_flag;
@@ -54,10 +51,10 @@ static void my_ens160_task(void *pvParameters)
                 } else {
                     ens160_aqi_uba_row_t uba_aqi = ens160_aqi_index_to_definition(aq_data.uba_aqi);
 
-                    ESP_LOGW(TAG, "index    %1x (%s)", aq_data.uba_aqi, uba_aqi.rating);
-                    ESP_LOGW(TAG, "tvco     %d (0x%04x)", aq_data.tvoc, aq_data.tvoc);
-                    ESP_LOGW(TAG, "etoh     %d (0x%04x)", aq_data.etoh, aq_data.etoh);
-                    ESP_LOGW(TAG, "eco2     %d (0x%04x)", aq_data.eco2, aq_data.eco2);
+                    // ESP_LOGW(TAG, "index    %1x (%s)", aq_data.uba_aqi, uba_aqi.rating);
+                    // ESP_LOGW(TAG, "tvco     %d (0x%04x)", aq_data.tvoc, aq_data.tvoc);
+                    // ESP_LOGW(TAG, "etoh     %d (0x%04x)", aq_data.etoh, aq_data.etoh);
+                    // ESP_LOGW(TAG, "eco2     %d (0x%04x)", aq_data.eco2, aq_data.eco2);
 
                     if(my_sensor_ens160_callback != NULL) {
                         my_sensor_ens160_callback(aq_data.uba_aqi, aq_data.tvoc, aq_data.eco2);
@@ -69,33 +66,33 @@ static void my_ens160_task(void *pvParameters)
                 if(result != ESP_OK) {
                     ESP_LOGE(TAG, "ens160 device read failed (%s)", esp_err_to_name(result));
                 } else {
-                    ESP_LOGW(TAG, "ri-res 0 %lu", aq_raw_data.hp0_ri);
-                    ESP_LOGW(TAG, "ri-res 1 %lu", aq_raw_data.hp1_ri);
-                    ESP_LOGW(TAG, "ri-res 2 %lu", aq_raw_data.hp2_ri);
-                    ESP_LOGW(TAG, "ri-res 3 %lu", aq_raw_data.hp3_ri);
+                    // ESP_LOGW(TAG, "ri-res 0 %lu", aq_raw_data.hp0_ri);
+                    // ESP_LOGW(TAG, "ri-res 1 %lu", aq_raw_data.hp1_ri);
+                    // ESP_LOGW(TAG, "ri-res 2 %lu", aq_raw_data.hp2_ri);
+                    // ESP_LOGW(TAG, "ri-res 3 %lu", aq_raw_data.hp3_ri);
 
-                    ESP_LOGW(TAG, "bl-res 0 %lu", aq_raw_data.hp0_bl);
-                    ESP_LOGW(TAG, "bl-res 1 %lu", aq_raw_data.hp1_bl);
-                    ESP_LOGW(TAG, "bl-res 2 %lu", aq_raw_data.hp2_bl);
-                    ESP_LOGW(TAG, "bl-res 3 %lu", aq_raw_data.hp3_bl);
+                    // ESP_LOGW(TAG, "bl-res 0 %lu", aq_raw_data.hp0_bl);
+                    // ESP_LOGW(TAG, "bl-res 1 %lu", aq_raw_data.hp1_bl);
+                    // ESP_LOGW(TAG, "bl-res 2 %lu", aq_raw_data.hp2_bl);
+                    // ESP_LOGW(TAG, "bl-res 3 %lu", aq_raw_data.hp3_bl);
                 }
             } else if(dev_flag == ENS160_VALFLAG_WARMUP) {
                 ESP_LOGW(TAG, "ens160 device is warming up (180-sec wait [%u-sec])", startup_time);
-                startup_time = startup_time + ENS160_SAMPLING_PERIOD / SECOND_TO_MILLISECOND;
+                startup_time = startup_time + ENS160_SAMPLING_PERIOD_MS / SECOND_TO_MILLISECOND;
             } else if(dev_flag == ENS160_VALFLAG_INITIAL_STARTUP) {
                 ESP_LOGW(TAG, "ens160 device is undrgoing initial starting up (3600-sec wait [%u-sec])", startup_time);
-                startup_time = startup_time + ENS160_SAMPLING_PERIOD / SECOND_TO_MILLISECOND;
+                startup_time = startup_time + ENS160_SAMPLING_PERIOD_MS / SECOND_TO_MILLISECOND;
             } else if(dev_flag == ENS160_VALFLAG_INVALID_OUTPUT) {
                 ESP_LOGW(TAG, "ens160 device signals are giving unexpected values");
             }
         }
         //
-        ESP_LOGI(TAG, "######################## ENS160 - END ###########################");
+        // ESP_LOGI(TAG, "######################## ENS160 - END ###########################");
         //
         //
         // pause the task per defined wait period
-        // vTaskDelaySecUntil(&last_wake_time, ENS160_SAMPLING_PERIOD);
-        vTaskDelay(pdMS_TO_TICKS(ENS160_SAMPLING_PERIOD));
+        // vTaskDelaySecUntil(&last_wake_time, ENS160_SAMPLING_PERIOD_MS);
+        vTaskDelay(pdMS_TO_TICKS(ENS160_SAMPLING_PERIOD_MS));
     }
     //
     // free resources
@@ -121,7 +118,7 @@ static void my_aht21_task(void *pvParameters)
     //
     // task loop entry point
     for ( ;; ) {
-        ESP_LOGI(TAG, "######################## AHTXX - START #########################");
+        // ESP_LOGI(TAG, "######################## AHTXX - START #########################");
         //
         // handle sensor
         float temperature, humidity;
@@ -129,20 +126,20 @@ static void my_aht21_task(void *pvParameters)
         if(result != ESP_OK) {
             ESP_LOGE(TAG, "ahtxx device read failed (%s)", esp_err_to_name(result));
         } else {
-            ESP_LOGI(TAG, "air temperature:     %.2f °C", temperature);
-            ESP_LOGI(TAG, "relative humidity:   %.2f %%", humidity);
+            // ESP_LOGI(TAG, "air temperature:     %.2f °C", temperature);
+            // ESP_LOGI(TAG, "relative humidity:   %.2f %%", humidity);
 
             if(my_sensor_aht21_callback != NULL) {
                 my_sensor_aht21_callback(temperature, humidity);
             }
         }
         //
-        ESP_LOGI(TAG, "######################## AHTXX - END ###########################");
+        // ESP_LOGI(TAG, "######################## AHTXX - END ###########################");
         //
         //
         // pause the task per defined wait period
         // vTaskDelaySecUntil(&last_wake_time, I2C0_TASK_SAMPLING_RATE);
-        vTaskDelay(pdMS_TO_TICKS(AHT21_SAMPLING_PERIOD));
+        vTaskDelay(pdMS_TO_TICKS(AHT21_SAMPLING_PERIOD_MS));
     }
     //
     // free resources

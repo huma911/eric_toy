@@ -5,6 +5,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_spiffs.h"
+#include "driver/gpio.h"
 
 #include "esp_lvgl_port.h"
 
@@ -46,11 +47,19 @@ static void spiffs_init(void)
 static void my_sensor_ens160_cb(uint8_t aqi_index, uint16_t tvoc_value, uint16_t eco2_value)
 {
     ESP_LOGI(TAG, "ESN160 have got the AQI index: %d, tvoc: %u, co2: %u.", aqi_index, tvoc_value, eco2_value);
+
+    if(lv_obj_is_valid(guider_ui.screen_clock_home)) {
+        set_air_quality_tvoc_co2(aqi_index, tvoc_value, eco2_value);
+    }
 }
 
 static void my_sensor_aht21_cb(float temperature_value, float humidity_value)
 {
     ESP_LOGI(TAG, "AHT21 have got the temperature: %f, humidity: %f.", temperature_value, humidity_value);
+
+    if(lv_obj_is_valid(guider_ui.screen_clock_home)) {
+        set_temperature_humidity(temperature_value, humidity_value);
+    }
 }
 
 //sntp callback
@@ -73,7 +82,9 @@ static void my_sntp_sync_time_cb(struct timeval *tv)
 
     set_date(&guider_ui, &my_time_value);
 
-    set_welcome_progress_bar(100);
+    if(lv_obj_is_valid(guider_ui.screen_welcome_home)) {
+        set_welcome_progress_bar(100);
+    }
 }
 
 //wifi call back
@@ -84,10 +95,12 @@ static void wifi_state_callback(WIFI_STATE state)
         // if(lv_obj_has_flag(guider_ui.screen_main_img_wifi, LV_OBJ_FLAG_HIDDEN)) {
         //     lv_obj_clear_flag(guider_ui.screen_main_img_wifi, LV_OBJ_FLAG_HIDDEN);  //show the wifi state image
         // }
+        if(lv_obj_is_valid(guider_ui.screen_welcome_home)) {
+            set_welcome_progress_bar(50);
+        }
         my_sntp_init(my_sntp_sync_time_cb);
     } else if(state == WIFI_STATE_DISCONNECTED) {
         ESP_LOGI(TAG, "wifi disconnected!");
-        set_welcome_progress_bar(50);
     } else {
         ;
     }
@@ -105,6 +118,18 @@ static void wifi_saved_info_callback(bool arg)
             set_welcome(arg);
         }
     }
+}
+
+static void led_flash_init(void)
+{
+    gpio_config_t led_gpio_cfg = {
+        .pin_bit_mask = (1ull << GPIO_NUM_3),
+        .mode         = GPIO_MODE_OUTPUT,
+        .pull_up_en   = GPIO_PULLUP_DISABLE,
+        .pull_down_en = GPIO_PULLDOWN_DISABLE,
+        .intr_type    = GPIO_INTR_DISABLE,
+    };
+    gpio_config(&led_gpio_cfg);
 }
 
 void app_main(void)
@@ -139,4 +164,6 @@ void app_main(void)
     //     ESP_LOGI(TAG, "current time stamp: %lld", now);
     //     vTaskDelay(pdMS_TO_TICKS(1000));
     // }
+    led_flash_init();
+    gpio_set_level(GPIO_NUM_3, 0);
 }

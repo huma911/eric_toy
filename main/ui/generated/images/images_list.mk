@@ -1,1 +1,1 @@
-GEN_CSRCS += _air_RGB565A8_24x24.c _button_RGB565A8_32x32.c _connect_RGB565A8_32x32.c _ap_RGB565A8_32x32.c _html_1_RGB565A8_32x32.c _html_2_RGB565A8_32x32.c _finish_RGB565A8_32x32.c
+GEN_CSRCS += _airquality_RGB565A8_64x32.c _pointer_RGB565A8_16x32.c _button_RGB565A8_32x32.c _connect_RGB565A8_32x32.c _ap_RGB565A8_32x32.c _html_1_RGB565A8_32x32.c _html_2_RGB565A8_32x32.c _finish_RGB565A8_32x32.c

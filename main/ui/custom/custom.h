@@ -15,6 +15,24 @@ extern "C" {
 
 #include "gui_guider.h"
 
+#include "my_sensor.h"
+
+typedef enum {
+    AQI_ROTATION_UNKNOWN   = -750,
+    AQI_ROTATION_EXCELLENT = 750,
+    AQI_ROTATION_GOOD      = 450,
+    AQI_ROTATION_MODERATE  = 150,
+    AQI_ROTATION_POOR      = -150,
+    AQI_ROTATION_UNHEALTHY = -450,
+} AQI_Rotation_Type;
+
+typedef struct {
+    ENS160_AQI_INDEX_t  index;
+    AQI_Rotation_Type   rotation;
+    uint32_t            color;
+    const char          *text;
+}AQI_Entry;
+
 typedef enum {
     AM = 0,
     PM,
@@ -56,6 +74,8 @@ void custom_init(lv_ui *ui);
 void set_welcome(bool have_saved_netinfo);
 void set_welcome_progress_bar(uint8_t percent);
 void set_date(lv_ui* ui, time_value_t* date_value);
+void set_temperature_humidity(float temperature, float humidity);
+void set_air_quality_tvoc_co2(ENS160_AQI_INDEX_t aqi, uint16_t tvoc, uint16_t co2);
 
 extern lv_timer_t* digital_clock_timer;
 

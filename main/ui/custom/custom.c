@@ -84,6 +84,65 @@ void set_welcome_progress_bar(uint8_t percent)
     }
 }
 
+//clock screen
+//air quality indicator
+//unknown：     -75     bab9ba
+//bad:          -45     f05153
+//poor:         -15     faa31a
+//fair:         15      fcd703
+//good:         45      9cd08a
+//excellent:    75      8ed8f8
+
+//temperature & humidity
+void set_temperature_humidity(float temperature, float humidity)
+{
+    char temperature_text[8];
+    char humidity_text[8];
+
+    memset(temperature_text, 0, sizeof(temperature_text));
+    memset(humidity_text, 0, sizeof(humidity_text));
+
+    snprintf(temperature_text, sizeof(temperature_text), "%.2fC", temperature);
+    snprintf(humidity_text, sizeof(humidity_text), "%.2f%%", humidity);
+
+    lvgl_port_lock(0);
+    lv_label_set_text(custom_ui->screen_clock_home_label_temp_value, temperature_text);
+    lv_label_set_text(custom_ui->screen_clock_home_label_humidity_value, humidity_text);
+    lvgl_port_unlock();
+}
+
+const AQI_Entry qui_entries[] = {
+    {ENS160_AQI_UNKNOWN,    AQI_ROTATION_UNKNOWN,    0xbab9ba,   "Unknown"},
+    {ENS160_AQI_EXCELLENT,  AQI_ROTATION_EXCELLENT,  0x8ed8f8,   "Excellent"},
+    {ENS160_AQI_GOOD,       AQI_ROTATION_GOOD,       0x9cd08a,   "Good"},
+    {ENS160_AQI_MODERATE,   AQI_ROTATION_MODERATE,   0xfcd703,   "Fair"},
+    {ENS160_AQI_POOR,       AQI_ROTATION_POOR,       0xfaa31a,   "Poor"},
+    {ENS160_AQI_UNHEALTHY,  AQI_ROTATION_UNHEALTHY,  0xf05153,   "Unhealthy"},
+};
+
+//air quality TVOC CO2
+void set_air_quality_tvoc_co2(ENS160_AQI_INDEX_t aqi, uint16_t tvoc, uint16_t co2)
+{
+    char tvoc_text[16];
+    char co2_text[16];
+
+    memset(tvoc_text, 0, sizeof(tvoc_text));
+    memset(co2_text, 0, sizeof(co2_text));
+
+    // snprintf(tvoc_text, sizeof(tvoc_text), "0.%03fmL/m3", (float)(tvoc/1000.0));    // 1 ppm = 1 mL/m³ = 1000 ppb = 1000 µL/m³
+    snprintf(tvoc_text, sizeof(tvoc_text), "%uppb", tvoc);
+    snprintf(co2_text, sizeof(co2_text), "%uppm", co2);
+
+    lvgl_port_lock(0);
+    if(aqi == qui_entries[aqi].index) {
+        lv_image_set_rotation(custom_ui->screen_clock_home_img_indicator, (int32_t)(qui_entries[aqi].rotation));
+        lv_obj_set_style_text_color(custom_ui->screen_clock_home_label_air_value, lv_color_hex(qui_entries[aqi].color), LV_PART_MAIN|LV_STATE_DEFAULT);
+        lv_label_set_text(custom_ui->screen_clock_home_label_air_value, qui_entries[aqi].text);
+    }
+    lv_label_set_text(custom_ui->screen_clock_home_label_tvoc_value, tvoc_text);
+    lv_label_set_text(custom_ui->screen_clock_home_label_co2_value, co2_text);
+    lvgl_port_unlock();
+}
 
 //time
 const Week_Entry week_entries[] = {

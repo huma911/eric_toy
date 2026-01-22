@@ -22,6 +22,7 @@ button_handle_t button_encoder_enter = NULL;
 static void button_k0_enter_single_click_cb(void *arg,void *usr_data)
 {
     ESP_LOGI(TAG, "BUTTON_K0_ENTER_SINGLE_CLICK");
+    static bool light_on = false;
 
     if(lv_obj_is_valid(guider_ui.screen_welcome_home)) {
         extern lv_ui guider_ui;
@@ -34,6 +35,10 @@ static void button_k0_enter_single_click_cb(void *arg,void *usr_data)
         ui_load_scr_animation(&guider_ui, &guider_ui.screen_ap_finish, guider_ui.screen_ap_finish_del, &guider_ui.screen_ap_html_del, setup_scr_screen_ap_finish, LV_SCR_LOAD_ANIM_FADE_IN, 1000, 0, true, true);
     } else {
         ;
+    }
+
+    if(lv_obj_is_valid(guider_ui.screen_clock_home)) {
+        gpio_set_level(GPIO_NUM_3, (light_on = !light_on));
     }
 }
 

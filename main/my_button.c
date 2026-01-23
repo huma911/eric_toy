@@ -7,6 +7,8 @@
 #include "gui_guider.h"
 #include "custom.h"
 
+#include "main.h"
+
 #define TAG "main_button"
 
 //button configuration
@@ -24,7 +26,7 @@ static void button_k0_enter_single_click_cb(void *arg,void *usr_data)
     ESP_LOGI(TAG, "BUTTON_K0_ENTER_SINGLE_CLICK");
     static bool light_on = false;
 
-    if(lv_obj_is_valid(guider_ui.screen_welcome_home)) {
+    if(lv_obj_is_valid(guider_ui.screen_welcome_home) && (!myself.system_flag.have_wifi_saved_info)) {
         extern lv_ui guider_ui;
         ui_load_scr_animation(&guider_ui, &guider_ui.screen_ap_home, guider_ui.screen_ap_home_del, &guider_ui.screen_welcome_home_del, setup_scr_screen_ap_home, LV_SCR_LOAD_ANIM_FADE_IN, 1000, 0, true, true);
     } else if(lv_obj_is_valid(guider_ui.screen_ap_ap)) {

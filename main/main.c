@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include "main.h"
 
 #include "nvs_flash.h"
 #include "esp_log.h"
@@ -24,6 +24,8 @@
 
 lv_ui guider_ui;
 
+//myself
+eric_toy_instance_t myself;
 
 //html path in the spiffs
 #define INDEX_HTML_PATH "/spiffs/html/apcfg.html"
@@ -46,7 +48,12 @@ static void spiffs_init(void)
 //sensor callback
 static void my_sensor_ens160_cb(uint8_t aqi_index, uint16_t tvoc_value, uint16_t eco2_value)
 {
-    ESP_LOGI(TAG, "ESN160 have got the AQI index: %d, tvoc: %u, co2: %u.", aqi_index, tvoc_value, eco2_value);
+    ESP_LOGI(TAG, "ESN160 have got the AQI index: %d, tvoc: %u, co2: %u, valid: %s.", aqi_index, tvoc_value, eco2_value, myself.system_flag.ens160_warm_up_finished? "true" : "false");
+
+    if(!myself.system_flag.ens160_warm_up_finished) {   //avoid first invalid data
+        myself.system_flag.ens160_warm_up_finished = true;
+        return;
+    }
 
     if(lv_obj_is_valid(guider_ui.screen_clock_home)) {
         set_air_quality_tvoc_co2(aqi_index, tvoc_value, eco2_value);
@@ -84,6 +91,7 @@ static void my_sntp_sync_time_cb(struct timeval *tv)
 
     if(lv_obj_is_valid(guider_ui.screen_welcome_home)) {
         set_welcome_progress_bar(100);
+        my_sensor_init(my_sensor_ens160_cb, my_sensor_aht21_cb);
     }
 }
 
@@ -110,7 +118,9 @@ static void wifi_saved_info_callback(bool arg)
 {
     ESP_LOGI(TAG, "wifi %s info callback", arg? "have" : "no");
 
-    if(lv_obj_is_valid(guider_ui.screen_welcome_home)){
+    myself.system_flag.have_wifi_saved_info = arg;
+
+    if(lv_obj_is_valid(guider_ui.screen_welcome_home)) {
         set_welcome(arg);
     } else {
         if(lv_obj_is_valid(guider_ui.screen_ap_finish)) {   //from ap finish screen(ap config wifi success)
@@ -138,11 +148,13 @@ void app_main(void)
     
     ESP_LOGI(TAG, "Hello world!");
 
+    myself.system_flag.system_flag_uint32 = 0;
+
     spiffs_init();
 
     my_button_init();
     // my_knob_init();
-    my_sensor_init(my_sensor_ens160_cb, my_sensor_aht21_cb);
+    // my_sensor_init(my_sensor_ens160_cb, my_sensor_aht21_cb);
     my_display_init();
 
     my_time_zone_set();

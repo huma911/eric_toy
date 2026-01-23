@@ -77,7 +77,7 @@ void set_welcome_progress_bar(uint8_t percent)
     lvgl_port_unlock();
 
     if(percent == 100) {
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        vTaskDelay(pdMS_TO_TICKS(500));
         lvgl_port_lock(0);
         ui_load_scr_animation(custom_ui, &custom_ui->screen_clock_home, custom_ui->screen_clock_home_del, &custom_ui->screen_welcome_home_del, setup_scr_screen_clock_home, LV_SCR_LOAD_ANIM_FADE_IN, 1000, 0, true, true);
         lvgl_port_unlock();

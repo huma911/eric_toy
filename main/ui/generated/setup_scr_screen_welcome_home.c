@@ -51,7 +51,7 @@ void setup_scr_screen_welcome_home(lv_ui *ui)
     ui->screen_welcome_home_bar_progress = lv_bar_create(ui->screen_welcome_home_cont_welcome);
     lv_obj_set_pos(ui->screen_welcome_home_bar_progress, 20, 100);
     lv_obj_set_size(ui->screen_welcome_home_bar_progress, 120, 10);
-    lv_obj_set_style_anim_duration(ui->screen_welcome_home_bar_progress, 1000, 0);
+    lv_obj_set_style_anim_duration(ui->screen_welcome_home_bar_progress, 500, 0);
     lv_bar_set_mode(ui->screen_welcome_home_bar_progress, LV_BAR_MODE_NORMAL);
     lv_bar_set_range(ui->screen_welcome_home_bar_progress, 0, 100);
     lv_bar_set_value(ui->screen_welcome_home_bar_progress, 0, LV_ANIM_ON);

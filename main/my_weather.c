@@ -152,13 +152,13 @@ static esp_err_t pasre_weather(char* weather_js)
         char image_path[32];
 
         snprintf(image_path, sizeof(image_path), "/weather_icon/%s.png", weather_pasre_data[DAY_TODAY].code_day);
-        set_weather_parameter(custom_ui, DAY_TODAY, image_path, weather_pasre_data[DAY_TODAY].low_temperature, weather_pasre_data[DAY_TODAY].high_temperature);
+        set_weather(custom_ui, DAY_TODAY, image_path, weather_pasre_data[DAY_TODAY].low_temperature, weather_pasre_data[DAY_TODAY].high_temperature);
 
         snprintf(image_path, sizeof(image_path), "/weather_icon/%s.png", weather_pasre_data[DAY_TOMORROW].code_day);
-        set_weather_parameter(custom_ui, DAY_TOMORROW, image_path, weather_pasre_data[DAY_TOMORROW].low_temperature, weather_pasre_data[DAY_TOMORROW].high_temperature);
+        set_weather(custom_ui, DAY_TOMORROW, image_path, weather_pasre_data[DAY_TOMORROW].low_temperature, weather_pasre_data[DAY_TOMORROW].high_temperature);
         
         snprintf(image_path, sizeof(image_path), "/weather_icon/%s.png", weather_pasre_data[DAY_AFTER_TOMORROW].code_day);
-        set_weather_parameter(custom_ui, DAY_AFTER_TOMORROW, image_path, weather_pasre_data[DAY_AFTER_TOMORROW].low_temperature, weather_pasre_data[DAY_AFTER_TOMORROW].high_temperature);
+        set_weather(custom_ui, DAY_AFTER_TOMORROW, image_path, weather_pasre_data[DAY_AFTER_TOMORROW].low_temperature, weather_pasre_data[DAY_AFTER_TOMORROW].high_temperature);
     }
 
     cJSON_Delete(weather_data);
@@ -209,7 +209,7 @@ static esp_err_t pasre_location(char* location_js)
         ESP_LOGI(TAG, "local city: %s", location_city_data);
     }
 
-    set_location_parameter(custom_ui, location_city_data);
+    set_location(custom_ui, location_city_data);
 
     cJSON_Delete(location_data);
     return ESP_OK;

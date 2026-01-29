@@ -271,6 +271,55 @@ static void time_stamp_sync_task(void* param)
     }
 }
 
+//weather screen
+void set_location(lv_ui* ui, const char* location_name)
+{
+    if(ui == NULL || location_name == NULL) {
+        return;
+    }
+
+    lvgl_port_lock(0);
+    // lv_label_set_text(ui->screen_main_label_location, location_name);
+    // lv_label_set_text(ui->screen_aclock_label_location, location_name);
+    lvgl_port_unlock();
+
+}
+
+void set_weather(lv_ui* ui, Day_Type index, const char* image_path, int low_temperature, int high_temperature)
+{
+    char temperature_text[32];
+
+    if(ui == NULL || image_path == NULL) {
+        return;
+    }
+
+    lvgl_port_lock(0);
+    switch(index) {
+        case DAY_TODAY:
+            snprintf(temperature_text, sizeof(temperature_text), "%d-%d℃", low_temperature, high_temperature);
+            // lv_label_set_text(ui->screen_main_label_temp_today, temperature_text);
+            // lv_image_set_src(ui->screen_main_img_weather_taday, image_path);
+
+            // lv_label_set_text(ui->screen_aclock_label_temp_today, temperature_text);
+            // lv_image_set_src(ui->screen_aclock_img_weather, image_path);
+            break;
+        case DAY_TOMORROW:
+            snprintf(temperature_text, sizeof(temperature_text), "%d-%d℃", low_temperature, high_temperature);
+            // lv_label_set_text(ui->screen_main_label_temp_tomorrow, temperature_text);
+            // lv_image_set_src(ui->screen_main_img_weather_tomorrow, image_path);
+            break;
+        case DAY_AFTER_TOMORROW:
+            snprintf(temperature_text, sizeof(temperature_text), "%d-%d℃", low_temperature, high_temperature);
+            // lv_label_set_text(ui->screen_main_label_temp_after_tomorrow, temperature_text);
+            // lv_image_set_src(ui->screen_main_img_weather_after_tomorrow, image_path);
+            break;
+        default:
+            break;
+    }
+    
+    lvgl_port_unlock();
+}
+
 void custom_init(lv_ui *ui)
 {
     /* Add your codes here */

@@ -54,6 +54,13 @@ typedef struct {
 } time_value_t;
 
 typedef enum {
+    DAY_TODAY = 0,
+    DAY_TOMORROW,
+    DAY_AFTER_TOMORROW,
+    DAY_DAY_NUM,
+} Day_Type;
+
+typedef enum {
     WEEK_SUNDAY = 0,
     WEEK_MONDAY,
     WEEK_TUESDAY,
@@ -76,6 +83,10 @@ void set_welcome_progress_bar(uint8_t percent);
 void set_date(lv_ui* ui, time_value_t* date_value);
 void set_temperature_humidity(float temperature, float humidity);
 void set_air_quality_tvoc_co2(ENS160_AQI_INDEX_t aqi, uint16_t tvoc, uint16_t co2);
+void set_location(lv_ui* ui, const char* location_name);
+void set_weather(lv_ui* ui, Day_Type index, const char* image_path, int low_temperature, int high_temperature);
+
+extern lv_ui* custom_ui;
 
 extern lv_timer_t* digital_clock_timer;
 

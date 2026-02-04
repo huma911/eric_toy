@@ -28,20 +28,6 @@ char location_city_data[32];
 char location_ip_data[32];
 weather_data_t weather_pasre_data[3];
 
-
-static void weather_image_spiffs_init(void)
-{
-    //定义挂载点
-    esp_vfs_spiffs_conf_t conf = {
-        .base_path = "/weather_icon",       //挂载点
-        .partition_label = "weather_icon",  //分区名称
-        .max_files = 5,                     //最大打开的文件数
-        .format_if_mount_failed = false     //挂载失败是否执行格式化
-        };
-    //挂载spiffs
-    ESP_ERROR_CHECK(esp_vfs_spiffs_register(&conf));
-}
-
 static esp_err_t http_client_event_handler(esp_http_client_event_t *evt)
 {
     switch(evt->event_id) {
@@ -151,13 +137,13 @@ static esp_err_t pasre_weather(char* weather_js)
 
         char image_path[32];
 
-        snprintf(image_path, sizeof(image_path), "/weather_icon/%s.png", weather_pasre_data[DAY_TODAY].code_day);
+        snprintf(image_path, sizeof(image_path), "/spiffs/weather/%s.png", weather_pasre_data[DAY_TODAY].code_day);
         set_weather(custom_ui, DAY_TODAY, image_path, weather_pasre_data[DAY_TODAY].low_temperature, weather_pasre_data[DAY_TODAY].high_temperature);
 
-        snprintf(image_path, sizeof(image_path), "/weather_icon/%s.png", weather_pasre_data[DAY_TOMORROW].code_day);
+        snprintf(image_path, sizeof(image_path), "/spiffs/weather/%s.png", weather_pasre_data[DAY_TOMORROW].code_day);
         set_weather(custom_ui, DAY_TOMORROW, image_path, weather_pasre_data[DAY_TOMORROW].low_temperature, weather_pasre_data[DAY_TOMORROW].high_temperature);
         
-        snprintf(image_path, sizeof(image_path), "/weather_icon/%s.png", weather_pasre_data[DAY_AFTER_TOMORROW].code_day);
+        snprintf(image_path, sizeof(image_path), "/spiffs/weather/%s.png", weather_pasre_data[DAY_AFTER_TOMORROW].code_day);
         set_weather(custom_ui, DAY_AFTER_TOMORROW, image_path, weather_pasre_data[DAY_AFTER_TOMORROW].low_temperature, weather_pasre_data[DAY_AFTER_TOMORROW].high_temperature);
     }
 
@@ -308,6 +294,5 @@ static void weather_task(void *param)
 
 void weather_start(void)
 {
-    // weather_image_spiffs_init();
     xTaskCreatePinnedToCore(weather_task, "weather", 4096, NULL, 2, NULL, 0);
 }
